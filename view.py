@@ -22,17 +22,24 @@ def register_quick():
 @app.route('/register/full', methods=['POST'])
 def register_full():
     data = request.json
-    usuario = Usuario.query.filter_by(email=data.get('email')).first()
-    if usuario:
-        usuario.matricula = data.get('matricula')
-        usuario.nome = data.get('nome')
-        usuario.cpf = data.get('cpf')
-        usuario.senha = data.get('senha')
-        db.session.commit()
-        return jsonify({'message': 'Usuario atualizado com sucesso - Registro completo feito'}), 200
-    else:
-        return jsonify({'message': 'Usuario não encontrado'}), 404
+    usuario = Usuario(
+        matricula=data.get('matricula'),
+        email=data.get('email'),
+        nome=data.get('nome'),
+        cpf=data.get('cpf'),
+        senha=data.get('senha'),
+        idade=data.get('idade')
+    )
 
+    try:
+        db.session.add(usuario)
+        db.session.commit()
+        return jsonify({'message': 'Usuário registrado com sucesso - Registro completo feito'}), 201
+
+    except Exception as e:
+        # Se ocorrer algum erro durante a inserção no banco de dados
+        db.session.rollback()
+        return jsonify({'message': f'Erro ao registrar usuário: {str(e)}'}), 500
 
 # Login
 @app.route('/login', methods=['POST'])
