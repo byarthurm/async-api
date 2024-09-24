@@ -111,7 +111,6 @@ def get_posts():
         'user_id': post.user_id
     } for post in posts]), 200
 
-
 @app.route('/posts/valida', methods=['GET'])
 def get_posts_valida():
     posts = PostFeed.query.filter_by(status=0).all()
@@ -191,26 +190,6 @@ def update_post(postfeed_id):
         return jsonify({'message': 'Post atualizado com sucesso'}), 200
     else:
         return jsonify({'message': 'Post não encontrado'}), 404
-
-
-@app.route('/users/<int:user_id>', methods=['PUT'])
-def update_user(user_id):
-    data = request.json
-    usuario = Usuario.query.get(user_id)
-    if usuario:
-        usuario.usuario = data.get('usuario', usuario.usuario)
-        usuario.idade = data.get('idade', usuario.idade)
-        usuario.interesse = data.get('interesse', usuario.interesse)
-        usuario.email = data.get('email', usuario.email)
-        usuario.permissao = data.get('permissao', usuario.permissao)
-        usuario.matricula = data.get('matricula', usuario.matricula)
-        usuario.nome = data.get('nome', usuario.nome)
-        usuario.cpf = data.get('cpf', usuario.cpf)
-        usuario.senha = data.get('senha', usuario.senha)
-        db.session.commit()
-        return jsonify({'message': 'Usuário atualizado com sucesso'}), 200
-    else:
-        return jsonify({'message': 'Usuário não encontrado'}), 404
 
 
 @app.route('/users/<int:user_id>', methods=['DELETE'])
