@@ -157,6 +157,7 @@ def get_posts_valida():
 # Cadastro de aviso
 @app.route('/warnings', methods=['POST'])
 def create_warning():
+
     data = request.json
     warning = WarningsForFeed(
         priority=data.get('priority'),
@@ -247,22 +248,3 @@ def login_coordinator():
         }), 200
     else:
         return jsonify({'message': 'CPF ou senha inválidos para coordenador'}), 404
-
-
-UPLOAD_FOLDER = 'static/uploads/'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-@app.route('/upload-perfil', methods=['POST'])
-def upload_perfil():
-
-    if 'photo' not in request.files:
-        return jsonify({'error': 'Nenhuma parte do arquivo'}), 400
-
-    file = request.files['photo']
-
-    if file.filename == '':
-        return jsonify({'error': 'Arquivo não selecionado'}), 400
-
-    file_path = os.path.join(UPLOAD_FOLDER, file.filename)
-    file.save(file_path)
-    return jsonify({'Mensagem': 'Arquivo enviado com sucesso', 'Caminho do arquivo': file_path}), 200
