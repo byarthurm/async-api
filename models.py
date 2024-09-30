@@ -24,8 +24,9 @@ class PostFeed(db.Model):
     description = db.Column(db.Text)
     likes = db.Column(db.Integer, default=0)
     comments = db.Column(db.Text)
-    category = db.Column(db.Integer)
+    category = db.Column(db.String(100))
     course = db.Column(db.String(100))
+    titulo = db.Column(db.String(255))
     status = db.Column(db.Boolean, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey('usuario.user_id'), nullable=False)  # Corrigido
 

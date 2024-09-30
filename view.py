@@ -49,7 +49,9 @@ def login():
     data = request.json
     usuario = Usuario.query.filter_by(matricula=data.get('matricula'), cpf=data.get('cpf')).first()
     if usuario and usuario.senha == data.get('senha'):
+        session['user_id'] = usuario.user_id
         return jsonify({'message': 'Login bem-sucedido'}), 200
+
     else:
         return jsonify({'message': 'Login inválidas'}), 401
 
@@ -73,19 +75,22 @@ def create_post():
     file.save(file_path)
 
     data = request.form
+    user_id = session['user_id']
 
     print(data)
 
     post = PostFeed(
-        img_id= "http://192.168.1.111:5000/" + file_path,
+        img_id=nameImg,
         description=data.get('description'),
+        titulo=data.get('titulo'),
         likes=0,
         comments=0,
         category=data.get('category'),
         course=data.get('course'),
         status=False,
-        user_id=27
+        user_id= user_id
     )
+
     db.session.add(post)
     db.session.commit()
     return jsonify({'message': 'Postagem criada com sucesso'}), 201
@@ -121,6 +126,7 @@ def get_posts():
     posts = PostFeed.query.filter_by(status=1).all()
     return jsonify([{
         'postfeed_id': post.postfeed_id,
+        'titulo': post.titulo,
         'img_id': post.img_id,
         'description': post.description,
         'likes': post.likes,
@@ -137,6 +143,7 @@ def get_posts_valida():
     return jsonify([{
         'postfeed_id': post.postfeed_id,
         'img_id': post.img_id,
+        'titulo': post.titulo,
         'description': post.description,
         'likes': post.likes,
         'comments': post.comments,
@@ -242,7 +249,7 @@ def login_coordinator():
         return jsonify({'message': 'CPF ou senha inválidos para coordenador'}), 404
 
 
-UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = 'static/uploads/'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.route('/upload-perfil', methods=['POST'])
