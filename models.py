@@ -20,7 +20,7 @@ class PostFeed(db.Model):
     __tablename__ = 'Post_Feed'
 
     postfeed_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    img_id = db.Column(db.Integer)
+    img_id = db.Column(db.String(255))
     description = db.Column(db.Text)
     likes = db.Column(db.Integer, default=0)
     comments = db.Column(db.Text)

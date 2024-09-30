@@ -1,6 +1,8 @@
 from flask import jsonify, request, session, redirect
 from app import app, db
 from models import Usuario, PostFeed, WarningsForFeed, Coordinator
+import os
+import uuid
 
 
 @app.route('/register/quick', methods=['POST'])
@@ -55,16 +57,34 @@ def login():
 # Criação de post
 @app.route('/posts', methods=['POST'])
 def create_post():
-    data = request.json
+
+    if 'photo' not in request.files:
+        return jsonify({'error': 'Nenhuma parte do arquivo'}), 400
+
+    file = request.files['photo']
+
+    if file.filename == '':
+        return jsonify({'error': 'Arquivo não selecionado'}), 400
+
+    print('aaa')
+
+    nameImg = str(uuid.uuid4()) + ".jpg"
+    file_path = os.path.join(UPLOAD_FOLDER, nameImg)
+    file.save(file_path)
+
+    data = request.form
+
+    print(data)
+
     post = PostFeed(
-        img_id=data.get('img_id'),
+        img_id= "http://192.168.1.111:5000/" + file_path,
         description=data.get('description'),
-        likes=data.get('likes', 0),
-        comments=data.get('comments'),
+        likes=0,
+        comments=0,
         category=data.get('category'),
         course=data.get('course'),
-        status=data.get('status', False),
-        user_id=data.get('user_id')
+        status=False,
+        user_id=27
     )
     db.session.add(post)
     db.session.commit()
@@ -220,3 +240,22 @@ def login_coordinator():
         }), 200
     else:
         return jsonify({'message': 'CPF ou senha inválidos para coordenador'}), 404
+
+
+UPLOAD_FOLDER = 'uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+@app.route('/upload-perfil', methods=['POST'])
+def upload_perfil():
+
+    if 'photo' not in request.files:
+        return jsonify({'error': 'Nenhuma parte do arquivo'}), 400
+
+    file = request.files['photo']
+
+    if file.filename == '':
+        return jsonify({'error': 'Arquivo não selecionado'}), 400
+
+    file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+    file.save(file_path)
+    return jsonify({'Mensagem': 'Arquivo enviado com sucesso', 'Caminho do arquivo': file_path}), 200
