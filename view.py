@@ -56,6 +56,10 @@ def login():
         return jsonify({'message': 'Login inválidas'}), 401
 
 
+
+UPLOAD_FOLDER = 'static/uploads/'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
 # Criação de post
 @app.route('/posts', methods=['POST'])
 def create_post():
@@ -248,3 +252,6 @@ def login_coordinator():
         }), 200
     else:
         return jsonify({'message': 'CPF ou senha inválidos para coordenador'}), 404
+
+
+
