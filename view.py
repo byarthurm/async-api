@@ -3,8 +3,9 @@ from app import app, db
 from models import Usuario, PostFeed, WarningsForFeed, Coordinator
 import os
 import uuid
+from flask_bcrypt import Bcrypt
 
-
+bcrypt = Bcrypt(app)
 @app.route('/register/quick', methods=['POST'])
 def register_quick():
     data = request.json
@@ -24,12 +25,14 @@ def register_quick():
 @app.route('/register/full', methods=['POST'])
 def register_full():
     data = request.json
+    senha = data.get('senha')
+    senha_hash = bcrypt.generate_password_hash(senha).decode('utf-8')
     usuario = Usuario(
         matricula=data.get('matricula'),
         email=data.get('email'),
         nome=data.get('nome'),
         cpf=data.get('cpf'),
-        senha=data.get('senha'),
+        senha=senha_hash,
         idade=data.get('idade')
     )
 
@@ -47,8 +50,12 @@ def register_full():
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
+    senha = data.get('senha')
     usuario = Usuario.query.filter_by(matricula=data.get('matricula'), cpf=data.get('cpf')).first()
-    if usuario and usuario.senha == data.get('senha'):
+
+    senhadescrip = bcrypt.check_password_hash(usuario.senha, senha)
+
+    if usuario and senhadescrip:
         session['user_id'] = usuario.user_id
         return jsonify({'message': 'Login bem-sucedido'}), 200
 
