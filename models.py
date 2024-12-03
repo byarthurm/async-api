@@ -15,6 +15,8 @@ class Usuario(db.Model):
     cpf = db.Column(db.String(14), unique=True)
     senha = db.Column(db.String(100))
 
+    feeds = db.relationship('PostFeed', back_populates='user', uselist=True)
+
 
 class PostFeed(db.Model):
     __tablename__ = 'Post_Feed'
@@ -29,6 +31,8 @@ class PostFeed(db.Model):
     titulo = db.Column(db.String(255))
     status = db.Column(db.Boolean, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey('usuario.user_id'), nullable=False)  # Corrigido
+
+    user = db.relationship('Usuario', back_populates='feeds')
 
 
 class WarningsForFeed(db.Model):

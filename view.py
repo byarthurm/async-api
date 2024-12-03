@@ -57,7 +57,12 @@ def login():
 
     if usuario and senhadescrip:
         session['user_id'] = usuario.user_id
+
+        session['user_nome'] = usuario.nome
+        print(usuario.nome)
+
         return jsonify({'message': 'Login bem-sucedido'}), 200
+
 
     else:
         return jsonify({'message': 'Login inválidas'}), 401
@@ -87,6 +92,7 @@ def create_post():
 
     data = request.form
     user_id = session['user_id']
+    user_nome = session['user_nome']
 
     print(data)
 
@@ -145,7 +151,8 @@ def get_posts():
         'category': post.category,
         'course': post.course,
         'status': post.status,
-        'user_id': post.user_id
+        'user_id': post.user_id,
+        'user_name': post.user.nome
     } for post in posts]), 200
 
 @app.route('/posts/valida', methods=['GET'])
