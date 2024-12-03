@@ -267,5 +267,8 @@ def login_coordinator():
     else:
         return jsonify({'message': 'CPF ou senha inválidos para coordenador'}), 404
 
-
-
+# Logout
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.pop('user_id', None)
+    return jsonify({'message': 'Logout bem-sucedido'}), 200
